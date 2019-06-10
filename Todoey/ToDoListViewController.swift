@@ -12,12 +12,15 @@ class ToDoListViewController: UITableViewController {
     // Variable are declared here
     var itemARRAY = ["Find mike", "Buy eggs","Distroy Demorgan"]
     var lastSelectedRow: NSIndexPath? = nil
+    let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         tableView.dataSource = self
         tableView.delegate = self
+        defaults.array(forKey: "ToDoList")
+        tableView.reloadData()
         
         
     }
@@ -60,11 +63,12 @@ class ToDoListViewController: UITableViewController {
                 let alert = UIAlertController(title: "Add Todoey", message: "", preferredStyle: .alert)
         let alertAction = UIAlertAction(title: "Add New Todoey", style: .default) { (alert) in
             print("Sucesssul")
+            
             if textField.text != nil{
                 self.itemARRAY.append(textField.text!)
                 self.tableView.reloadData()
             }
-            
+            self.defaults.set(self.itemARRAY, forKey: "ToDoList")
         }
     
         
