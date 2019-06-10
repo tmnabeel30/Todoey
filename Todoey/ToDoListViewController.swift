@@ -10,7 +10,7 @@ import UIKit
 
 class ToDoListViewController: UITableViewController {
     // Variable are declared here
-    var itemARRAY = ["Find mike", "Buy eggs","Distroy Demorgan"]
+    var itemARRAY = [String?]()
     var lastSelectedRow: NSIndexPath? = nil
     let defaults = UserDefaults.standard
     
@@ -19,10 +19,11 @@ class ToDoListViewController: UITableViewController {
         // Do any additional setup after loading the view.
         tableView.dataSource = self
         tableView.delegate = self
-        defaults.array(forKey: "ToDoList")
-        tableView.reloadData()
-        
-        
+        if let item = defaults.array(forKey: "ToDoList") as? [String]{
+            itemARRAY = item
+            tableView.reloadData()
+        }
+        print(itemARRAY)
     }
     
     //MARK - TableviewDataSource Method
@@ -67,8 +68,10 @@ class ToDoListViewController: UITableViewController {
             if textField.text != nil{
                 self.itemARRAY.append(textField.text!)
                 self.tableView.reloadData()
+                  self.defaults.set(self.itemARRAY, forKey: "ToDoList")
+         
             }
-            self.defaults.set(self.itemARRAY, forKey: "ToDoList")
+          
         }
     
         
