@@ -11,33 +11,19 @@ import UIKit
 class ToDoListViewController: UITableViewController {
     // Variable are declared here
     var itemARRAY = [ItemModel]()
-    let defaults = UserDefaults.standard
+    
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-       
-        let newItem = ItemModel()
-        newItem.title = "mike"
-        itemARRAY.append(newItem)
+  
+        loadUp()
         
-        let newItem2 = ItemModel()
-        newItem2.title = "angela"
-        itemARRAY.append(newItem2)
-
-        
-        let newItem3 = ItemModel()
-        newItem3.title = "nabeel"
-        itemARRAY.append(newItem3)
+        print(dataFilePath)
         
         
-//        if let item = defaults.dictionaryWithValues(forKey: "ToDoList") as? [String]{
-//            itemARRAY = item
-//            tableView.reloadData()
-//        }
-//        print(itemARRAY)
-//    }
-////
     }
     //MARK - TableviewDataSource Method
     
@@ -47,15 +33,8 @@ class ToDoListViewController: UITableViewController {
         let trueOrfalse = itemARRAY[indexPath.row].Done
 
         cell.textLabel?.text = itemARRAY[indexPath.row].title
-        if trueOrfalse == true{
-           cell.accessoryType = .checkmark
-            
-            print("clicked")
-        }else{
-     cell.accessoryType = .none
-           
-            print("clicked")
-        }
+    
+        cell.accessoryType = trueOrfalse ? .checkmark:.none
        
         
         return cell
@@ -87,7 +66,7 @@ class ToDoListViewController: UITableViewController {
         //Check and uncheck
          itemARRAY[indexPath.row].Done = !(itemARRAY[indexPath.row].Done)
         print(itemARRAY[indexPath.row].Done,itemARRAY[indexPath.row].title)
-   
+   createList()
         tableView.reloadData()
         
 
@@ -117,18 +96,19 @@ class ToDoListViewController: UITableViewController {
             nItem.title = textField.text!
          
             
-            
-            self.itemARRAY.append(nItem)
-//            self.defaults.set(self.itemARRAY, forKey: "ToDoList")
-            self.tableView.reloadData()
-            
-//            if textField.text != nil{
-//                self.itemARRAY.append(newItem.title)
-//                self.tableView.reloadData()
-//                  self.defaults.set(self.itemARRAY, forKey: "ToDoList")
 //
-//            }
+//            self.itemARRAY.append(nItem)
+//            self.defaults.set(self.itemARRAY, forKey: "ToDoList")
+//            self.tableView.reloadData()
+//
+            if textField.text != nil{
+                self.itemARRAY.append(nItem)
           
+        
+
+            }
+           self.createList()
+            self.loadUp() 
         }
     
         
@@ -154,7 +134,29 @@ class ToDoListViewController: UITableViewController {
         
     }
     
-
+    func createList(){
+        let encoder = PropertyListEncoder()
+        do{
+            let data = try encoder.encode(itemARRAY)
+            try data.write(to: dataFilePath!)
+        print("!")
+        }catch{
+            print("Error 154 \(error)")
+        }
+        tableView.reloadData()
+    }
+    
+    func loadUp(){
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            do{
+                itemARRAY = try decoder.decode([ItemModel].self, from: data)
+            }catch{
+                print("error in 165 \(error)")
+            }
+        }
+    }
+    
 }
 
 
